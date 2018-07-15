@@ -48,6 +48,6 @@ func main() {
         TLSConfig:    cfg,
         TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
     }
-    log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
+    log.Fatal(srv.ListenAndServeTLS("/etc/ssl/certs/server.crt", "/etc/ssl/certs/server.key"))
 
 }
