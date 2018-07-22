@@ -1,3 +1,5 @@
+#Used as temporary testing certificates. 
+
 # ECDSA recommendation key ≥ secp384r1
 # List ECDSA the supported curves (openssl ecparam -list_curves)
 openssl req -x509 -nodes -newkey ec:secp384r1 -keyout server.ecdsa.key -out server.ecdsa.crt -days 3650

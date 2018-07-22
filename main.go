@@ -25,24 +25,22 @@ func index(w http.ResponseWriter, req *http.Request) {
 	http.ServeFile(w, req, "index.html")
 }
 
-func letsencrypt(w http.ResponseWriter, req *http.Request) {
-	w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-//	if req.URL.Path != "/.well-known/acme-challenge/" {
-//		log.Printf("404: %s", req.URL.String())
-//		http.NotFound(w, req)
-//		return
-//	}
-	http.FileServer(http.Dir("/tmp/letsencrypt/"))
-}
 
 func main() {
 	go http.ListenAndServe(":80", http.HandlerFunc(redirectTLS))
     mux := http.NewServeMux()
-    mux.HandleFunc("/.well-known/acme-challenge/", letsencrypt)
-    mux.HandleFunc("/", index) //func(w http.ResponseWriter, req *http.Request) {
- //       w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-  //      w.Write([]byte("This is an example server.\n"))
+
+	
+	//make sure we can renew LetsEncrypt Certs. Below mux handle will allow LetsEncrypt and our webserver to verify one another.
+	mux.Handle("/.well-known/acme-challenge/", http.StripPrefix("/.well-known/acme-challenge/", http.FileServer(http.FileSystem(http.Dir("/tmp/letsencrypt/")))))
+
+	//Point us home
+  mux.HandleFunc("/", index) //func(w http.ResponseWriter, req *http.Request) {
     
+
+
+
+	//webserver config, this gets A+ on Qualys scan if you're sure to bind to 443 with cert chain.
     cfg := &tls.Config{
         MinVersion:               tls.VersionTLS12,
         CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
@@ -50,8 +48,6 @@ func main() {
         CipherSuites: []uint16{
             tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
             tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-            tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-            tls.TLS_RSA_WITH_AES_256_CBC_SHA,
         },
     }
     srv := &http.Server{
@@ -60,42 +56,7 @@ func main() {
         TLSConfig:    cfg,
         TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
     }
-    log.Println(srv.ListenAndServeTLS("server.crt", "server.key"))
+    log.Println(srv.ListenAndServeTLS("/etc/ssl/iminshell.com.pem", "/etc/ssl/iminshell.com.key"))
 
 }
 
-
-
-//func getkey() {
-//	b, err := ioutil.ReadFile("/srv/apikey")
-//	if err != nil {
-//		fmt.Print(err)
-//	}
-//	var apikey string = string(b)
-//}
-
-
-
-
-
-const job = "golang"
-const locale = "Michigan"
-const miles = "25"
-const days_ago = "30"
-const perp = "20"
-
-//func zipsearch() {
-//	fmt.Println("Starting...")
-//	search := http.NewRequest("GET", string getzipurl)
-//	client := &http.Client{}
-//	response, err := client.Do(search)
-//	if err != nil {
-//		fmt.Printf("HTTP req failed with error %s\n", err)
-//	} else {
-//		data, _ := ioutil.ReadAll(response.Body)
-//		fmt.Println(string(data))
-//	}
-//	
-	//"https://api.ziprecruiter.com/jobs/v1?search=" + job + "&location=" + locale + "&radius_miles=" + miles + "&days_ago=" + days_ago + "&jobs_per_page=10&page=1&api_key=" + apikey)
-
-//}
