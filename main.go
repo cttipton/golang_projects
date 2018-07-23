@@ -12,10 +12,10 @@ import (
 //set header for all handlers instead of configuring each one.  Credit Adam Ng https://www.socketloop.com/tutorials/golang-set-or-add-headers-for-many-or-different-handlers
 func SetHeaders(w http.ResponseWriter) {
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 	w.Header().Set("Allow", "OPTIONS, GET, HEAD, POST")
-	w.Header().Set("Content-Security-Policy", "default-src 'none'; font-src 'https://fonts.googleapis.com'; img-src 'self' https://i.imgur.com; object-src 'none'; script-src 'self'; style-src 'self'; frame-ancestors 'self'")
+	w.Header().Set("Content-Security-Policy", "default-src 'none'; font-src 'https://fonts.googleapis.com'; img-src 'self' https://i.imgur.com; object-src 'none'; script-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; 'stric-dynamic'")
 	w.Header().Set("Set-Cookie", "__Host-BMOSESSIONID=YnVnemlsbGE=; Max-Age=2592000; Path=/; Secure; HttpOnly; SameSite=Strict")
 	w.Header().Set("Referrer-Policy", "no-referrer, strict-origin-when-cross-origin")
 	w.Header().Set("X-Content-Type-Options","nosniff")
